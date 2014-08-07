@@ -45,8 +45,8 @@ public class Test {
 	}
 	
 	public static void main(String[] argv) {
-		callSendMsg();
-		//callReceiveMsg_A();
+		//callSendMsg();
+		callReceiveMsg_A();
 		//callReceiveMsg_B();
 	}
 

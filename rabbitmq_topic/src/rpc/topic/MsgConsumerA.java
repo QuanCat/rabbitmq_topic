@@ -38,7 +38,7 @@ public class MsgConsumerA {
 		// basicConsume(java.lang.String queue, boolean autoAck,
 		// java.lang.String consumerTag, Consumer callback)
 		// Start two non-nolocal, non-exclusive consumers.
-		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag1", consumer_A);
+		channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
 		
 		return this;
 	}
@@ -60,7 +60,6 @@ public class MsgConsumerA {
 		while (true) {
 			QueueingConsumer.Delivery delivery;
 			try {
-				System.out.println("-------------");
 				delivery = consumer_A.nextDelivery();
 				String message = new String(delivery.getBody());
 		        String routingKey = delivery.getEnvelope().getRoutingKey();
