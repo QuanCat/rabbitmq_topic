@@ -35,8 +35,7 @@ public class MsgConsumerA {
 		
 		// Start a Consumer
 		consumer_A = new QueueingConsumer(channel);
-		// basicConsume(java.lang.String queue, boolean autoAck,
-		// java.lang.String consumerTag, Consumer callback)
+		// basicConsume(java.lang.String queue, boolean autoAck, java.lang.String consumerTag, Consumer callback)
 		// Start two non-nolocal, non-exclusive consumers.
 		channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
 		

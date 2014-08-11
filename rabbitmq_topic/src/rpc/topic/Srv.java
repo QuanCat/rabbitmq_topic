@@ -5,15 +5,19 @@ import java.io.IOException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.QueueingConsumer;
+//import com.rabbitmq.client.QueueingConsumer;
 
 public class Srv {
 	private static final String EXCHANGE_NAME = "topic_srv";
 	private static final String QUEUE_NAME_1 = "topic_srv_q1";
 	private static final String QUEUE_NAME_2 = "topic_srv_q2";
+	
+	private static final String QUEUE_NAME_3 = "topic_srv_q3";
+	
 	private static final String EXCHANGE_TYPE_TOPIC = "topic";
 	private static final String ROUTING_KEY_QUEUE1 = "*.middle.*";
 	private static final String ROUTING_KEY_QUEUE2 = "front.#";
+	private static final String ROUTING_KEY_QUEUE3 = "quan.#";
 
 	private Connection connection;
 	private Channel channel;
@@ -38,21 +42,19 @@ public class Srv {
 		channel.queueDeclare(QUEUE_NAME_1, false, false, true, null);
 		// Queue2: non-durable, non-exclusive, auto-delete
 		channel.queueDeclare(QUEUE_NAME_2, false, false, true, null);
+		
+		//Queue3: 
+		channel.queueDeclare(QUEUE_NAME_3, false, false, true, null);
+		
+		channel.basicQos(1);
 
 		// Bind with Queue1:
 		channel.queueBind(QUEUE_NAME_1, EXCHANGE_NAME, ROUTING_KEY_QUEUE1);
 		// Bind with Queue2:
 		channel.queueBind(QUEUE_NAME_2, EXCHANGE_NAME, ROUTING_KEY_QUEUE2);
-		
-		// Start a Consumer
-//		consumer_A = new QueueingConsumer(channel);
-		// basicConsume(java.lang.String queue, boolean autoAck,
-		// java.lang.String consumerTag, Consumer callback)
-		// Start two non-nolocal, non-exclusive consumers.
-//		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag1", consumer_A);
-//		channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag2", consumer); // !!!!!!!!!!!!!!true -> false
+		// Bind with Queue3:
+		channel.queueBind(QUEUE_NAME_3, EXCHANGE_NAME, ROUTING_KEY_QUEUE3);
 
-		//System.out.println("Waiting for RPC calls...");
 
 		return channel;
 	}
