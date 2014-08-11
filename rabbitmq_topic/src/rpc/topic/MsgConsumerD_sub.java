@@ -44,7 +44,7 @@ public class MsgConsumerD_sub {
 		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag4", consumer_D);
 		//channel.basicConsume(QUEUE_NAME_3, true, "customer_tag_4D", consumer_D);
 	/*	Thread q1 = new Thread(new Runnable(){
-
+//
 			@Override
 			public void run() {
 				try {

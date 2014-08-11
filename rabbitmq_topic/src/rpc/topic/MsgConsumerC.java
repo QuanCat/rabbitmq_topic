@@ -53,8 +53,9 @@ public class MsgConsumerC {
 			}
 		}
 	}
+	//
 	public void receiveMsg_C() {
-		boolean autoAck = false;
+		//boolean autoAck = false;
 
 		while (true) {
 			QueueingConsumer.Delivery delivery;

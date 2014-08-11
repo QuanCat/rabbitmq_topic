@@ -41,7 +41,7 @@ public class MsgConsumerA {
 		
 		return this;
 	}
-	
+	//
 	public void closeConnection() {
 		if (connection != null) {
 			try {

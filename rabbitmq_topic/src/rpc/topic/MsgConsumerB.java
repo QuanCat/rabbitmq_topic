@@ -16,7 +16,7 @@ public class MsgConsumerB {
 	private static final String EXCHANGE_TYPE_TOPIC = "topic";
 	private static final String QUEUE_NAME_2 = "topic_srv_q2";
 
-	
+	//
 	private Connection connection;
 	private Channel channel;
 	private QueueingConsumer consumer_B;
