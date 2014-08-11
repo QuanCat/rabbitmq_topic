@@ -11,17 +11,16 @@ public class Srv {
 	private static final String EXCHANGE_NAME = "topic_srv";
 	private static final String QUEUE_NAME_1 = "topic_srv_q1";
 	private static final String QUEUE_NAME_2 = "topic_srv_q2";
-	
 	private static final String QUEUE_NAME_3 = "topic_srv_q3";
 	
 	private static final String EXCHANGE_TYPE_TOPIC = "topic";
+	
 	private static final String ROUTING_KEY_QUEUE1 = "*.middle.*";
 	private static final String ROUTING_KEY_QUEUE2 = "front.#";
 	private static final String ROUTING_KEY_QUEUE3 = "quan.#";
 
 	private Connection connection;
 	private Channel channel;
-//	private QueueingConsumer consumer_A;
 
 	public Channel init() throws IOException {
 		// Create a connection
@@ -39,14 +38,15 @@ public class Srv {
 				false, null);
 
 		// Queue1: non-durable, non-exclusive, auto-delete
-		channel.queueDeclare(QUEUE_NAME_1, false, false, true, null);
+		channel.queueDeclare(QUEUE_NAME_1, true, false, true, null);
 		// Queue2: non-durable, non-exclusive, auto-delete
-		channel.queueDeclare(QUEUE_NAME_2, false, false, true, null);
-		
-		//Queue3: 
+		channel.queueDeclare(QUEUE_NAME_2, true, false, true, null);
+		// Queue3: 
 		channel.queueDeclare(QUEUE_NAME_3, false, false, true, null);
 		
-		channel.basicQos(1);
+		//channel.queueDeclarePassive(arg0)
+		
+		channel.basicQos(1); //number of unacknowledged messages
 
 		// Bind with Queue1:
 		channel.queueBind(QUEUE_NAME_1, EXCHANGE_NAME, ROUTING_KEY_QUEUE1);

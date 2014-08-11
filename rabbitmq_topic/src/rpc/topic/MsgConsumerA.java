@@ -18,10 +18,11 @@ public class MsgConsumerA {
 	private Connection connection;
 	private Channel channel;
 	private QueueingConsumer consumer_A;
+	private ConnectionFactory factory;
 
 	public MsgConsumerA init() throws IOException {
 		// Create a connection
-		ConnectionFactory factory = new ConnectionFactory();
+		factory = new ConnectionFactory();
 		factory.setUsername("quan");
 		factory.setPassword("quan");
 		factory.setVirtualHost("rpctest");
@@ -32,26 +33,41 @@ public class MsgConsumerA {
 		
 		channel.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE_TOPIC);
 		//String queueName = channel.queueDeclare().getQueue();
-		
+		channel.basicQos(1);
 		// Start a Consumer
 		consumer_A = new QueueingConsumer(channel);
 		// basicConsume(java.lang.String queue, boolean autoAck, java.lang.String consumerTag, Consumer callback)
 		// Start two non-nolocal, non-exclusive consumers.
-		channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
+		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag1", consumer_A);
 		
 		return this;
 	}
-	//
 	public void closeConnection() {
-		if (connection != null) {
-			try {
+		try {
+		    connection = factory.newConnection();
+		    channel = connection.createChannel();
+		    //channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
+		  } catch (IOException e) {
+			  e.printStackTrace();
+		  } finally {
+		    if (channel != null) {
+		      try {
 				channel.close();
-				connection.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		    }
+		    if (connection != null) {
+		    	try {
+					connection.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		  } 
+
 	}
 
 	public void receiveMsg_A() {
@@ -62,8 +78,16 @@ public class MsgConsumerA {
 				delivery = consumer_A.nextDelivery();
 				String message = new String(delivery.getBody());
 		        String routingKey = delivery.getEnvelope().getRoutingKey();
+		        
+		        Thread.sleep(1000); //5s
 	
 		        System.out.println(" [x] Received_A '" + routingKey + "':'" + message + "'"); 
+		        try {
+					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		        
 			} catch (ShutdownSignalException | ConsumerCancelledException
 					| InterruptedException e1) {

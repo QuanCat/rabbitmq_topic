@@ -11,16 +11,20 @@ public class Test {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				callSendMsg();
 			}
 
 		});
 		Thread t1 = new Thread(new Runnable() {
-
+			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				callReceiveMsg_A();
 			}
 
@@ -29,7 +33,12 @@ public class Test {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				callReceiveMsg_D();
 			}
 
@@ -39,7 +48,12 @@ public class Test {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				callReceiveMsg_B();
 			}
 
@@ -48,16 +62,37 @@ public class Test {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				callReceiveMsg_C();
 			}
 
 		});
 		send.start();
+/*		try {
+			send.join();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
 		t1.start();
 		t4.start();
 		t2.start();
 		t3.start();
+
+		try {
+			send.join();
+			t1.join();
+			t2.join();
+			t3.join();
+			t4.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 	}
 

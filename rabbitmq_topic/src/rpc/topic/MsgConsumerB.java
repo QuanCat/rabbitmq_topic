@@ -20,10 +20,11 @@ public class MsgConsumerB {
 	private Connection connection;
 	private Channel channel;
 	private QueueingConsumer consumer_B;
+	private ConnectionFactory factory;
 	
 	public MsgConsumerB init() throws IOException {
 		// Create a connection
-		ConnectionFactory factory = new ConnectionFactory();
+		factory = new ConnectionFactory();
 		factory.setUsername("quan");
 		factory.setPassword("quan");
 		factory.setVirtualHost("rpctest");
@@ -48,15 +49,39 @@ public class MsgConsumerB {
 	}
 	
 	public void closeConnection() {
-		if (connection != null) {
-			try {
+		try {
+		    connection = factory.newConnection();
+		    channel = connection.createChannel();
+		    //channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag2", consumer_B);
+		  } catch (IOException e) {
+			  e.printStackTrace();
+		  } finally {
+		    if (channel != null) {
+		      try {
 				channel.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    }
+		    if (connection != null) {
+		    	try {
+					connection.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		  } 
+		/*if (connection != null) {
+			try {
+				//channel.close();
 				connection.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 	
 	public void receiveMsg_B() {
