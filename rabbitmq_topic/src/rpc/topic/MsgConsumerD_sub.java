@@ -84,7 +84,7 @@ public class MsgConsumerD_sub {
 		try {
 		    connection = factory.newConnection();
 		    channel = connection.createChannel();
-		    //channel.basicConsume(QUEUE_NAME_3, false, "customer_tag_4D", consumer_D);
+		    channel.basicConsume(QUEUE_NAME_3, false, "customer_tag_4D", consumer_D);
 		  } catch (IOException e) {
 			  e.printStackTrace();
 		  } finally {

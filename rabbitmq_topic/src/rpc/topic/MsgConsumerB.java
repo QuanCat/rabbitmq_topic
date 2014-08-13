@@ -15,7 +15,6 @@ public class MsgConsumerB {
 	private static final String EXCHANGE_NAME = "topic_srv";
 	private static final String EXCHANGE_TYPE_TOPIC = "topic";
 	private static final String QUEUE_NAME_2 = "topic_srv_q2";
-
 	//
 	private Connection connection;
 	private Channel channel;
@@ -52,7 +51,7 @@ public class MsgConsumerB {
 		try {
 		    connection = factory.newConnection();
 		    channel = connection.createChannel();
-		    //channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag2", consumer_B);
+		    channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag2", consumer_B);
 		  } catch (IOException e) {
 			  e.printStackTrace();
 		  } finally {
@@ -84,25 +83,52 @@ public class MsgConsumerB {
 		}*/
 	}
 	
-	public void receiveMsg_B() {
-		boolean autoAck = false;
+	public void reQueueMsg() {
+		//re-queue the message
+		GetResponse gr;
+		try {
+			gr = channel.basicGet(QUEUE_NAME_2, false);
+			channel.basicNack(gr.getEnvelope().getDeliveryTag(), false, true);
+			//channel.basicReject(gr.getEnvelope().getDeliveryTag(), false);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		flag = false;
 
+	}
+	boolean flag = true;
+	public void receiveMsg_B() {
+		
 		while (true) {
 			QueueingConsumer.Delivery delivery;
 			try {
+				
 				//GetResponse response = channel.basicGet(QUEUE_NAME_2, autoAck);
 				
 				//if (response == null) {
 					delivery = consumer_B.nextDelivery();
 					String message = new String(delivery.getBody());
 					String routingKey = delivery.getEnvelope().getRoutingKey();
-
-					System.out.println(" [x] Received_B '" + routingKey + "':'"
-							+ message + "'");
-					//System.out.println("%%%%%%="+response);
-					// to ack the message, the false flag is to do with multiple message acknowledgement
-					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 					
+					/*if (flag) {
+						System.out.println("Flag1= " + flag);
+						System.out.println("Re-queue Message: " + message);
+						reQueueMsg();
+						System.out.println("Flag2= " + flag);
+						
+					} */
+					if (flag) {
+						System.out.println(" [x] Received_B '" + routingKey + "':'"
+								+ message + "'");
+						// to ack the message, the false flag is to do with multiple message acknowledgment
+						channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+						flag = true;
+					}
+		
+					
+	
 				//} else {
 				//	System.out.println("previous message has not been acknowledged  BBB");
 				//}

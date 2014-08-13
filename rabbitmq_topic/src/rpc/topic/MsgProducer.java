@@ -2,6 +2,10 @@ package rpc.topic;
 
 import java.io.IOException;
 
+import rpc.topic.message.JsonToJava;
+import rpc.topic.message.Message;
+import rpc.topic.message.MsgDirectory;
+
 import com.rabbitmq.client.Channel;
 
 public class MsgProducer {
@@ -11,7 +15,23 @@ public class MsgProducer {
 	private String routingKey_BC = "front.quan";
 	private String message;
 	
+	private JsonToJava json;
+	private MsgDirectory msgDir;
+	
+	public MsgProducer() {
+		json = new JsonToJava();
+		msgDir = json.jsonToJava();
+	}
+	
 	public void sendMsg(Channel channel) throws IOException {
+		int size = msgDir.getMsgDirectory().size();
+		//message from json
+		if (size > 0) {
+			for (Message msg: msgDir.getMsgDirectory()) {
+				channel.basicPublish(EXCHANGE_NAME, msg.getRoutingKey(), null, msg.getContent().getBytes());
+			}
+		}
+
 		for (int i = 0; i < 100; i++) {
 			try {
 				Thread.sleep(100);

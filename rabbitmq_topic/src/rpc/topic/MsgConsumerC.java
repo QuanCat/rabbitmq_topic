@@ -47,7 +47,7 @@ public class MsgConsumerC {
 		try {
 		    connection = factory.newConnection();
 		    channel = connection.createChannel();
-		    //channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag3", consumer_C);
+		    channel.basicConsume(QUEUE_NAME_2, false, "comsumer_tag3", consumer_C);
 		    
 		  } catch (IOException e) {
 			  e.printStackTrace();
@@ -95,6 +95,11 @@ public class MsgConsumerC {
 
 					System.out.println(" [x] Received_C '" + routingKey + "':'"
 							+ message + "'");
+					/**
+					 * 
+					 * */
+					
+					
 					// to ack the message, the false flag is to do with multiple message acknowledgement
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 					

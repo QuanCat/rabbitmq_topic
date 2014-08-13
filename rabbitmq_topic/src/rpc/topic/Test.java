@@ -2,6 +2,8 @@ package rpc.topic;
 
 import java.io.IOException;
 
+import rpc.topic.message.JsonToJava;
+
 import com.rabbitmq.client.Channel;
 
 public class Test {
@@ -108,6 +110,7 @@ public class Test {
 		try {
 			srv = new Srv();
 			msg = new MsgProducer();
+			
 			Channel channel = srv.init();
 			msg.sendMsg(channel);
 		} catch (IOException e) {

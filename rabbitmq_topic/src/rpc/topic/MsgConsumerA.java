@@ -2,6 +2,7 @@ package rpc.topic;
 
 import java.io.IOException;
 
+import com.rabbitmq.client.AMQP.Basic;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -39,14 +40,13 @@ public class MsgConsumerA {
 		// basicConsume(java.lang.String queue, boolean autoAck, java.lang.String consumerTag, Consumer callback)
 		// Start two non-nolocal, non-exclusive consumers.
 		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag1", consumer_A);
-		
 		return this;
 	}
 	public void closeConnection() {
 		try {
 		    connection = factory.newConnection();
 		    channel = connection.createChannel();
-		    //channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
+		    channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
 		  } catch (IOException e) {
 			  e.printStackTrace();
 		  } finally {
@@ -67,10 +67,10 @@ public class MsgConsumerA {
 				}
 		    }
 		  } 
-
 	}
 
 	public void receiveMsg_A() {
+		boolean flag = false;
 		
 		while (true) {
 			QueueingConsumer.Delivery delivery;
@@ -79,7 +79,13 @@ public class MsgConsumerA {
 				String message = new String(delivery.getBody());
 		        String routingKey = delivery.getEnvelope().getRoutingKey();
 		        
-		        Thread.sleep(1000); //5s
+		        Thread.sleep(1000); //1s
+		        
+		        if (flag) {
+		        	//channel.basicNack(, false, true);
+		        } else {
+		        	
+		        }
 	
 		        System.out.println(" [x] Received_A '" + routingKey + "':'" + message + "'"); 
 		        try {

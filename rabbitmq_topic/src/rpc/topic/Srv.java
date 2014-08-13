@@ -29,6 +29,8 @@ public class Srv {
 		factory.setPassword("quan");
 		factory.setVirtualHost("rpctest");
 		factory.setHost("localhost");
+		// connection that will recover automatically
+		factory.setAutomaticRecoveryEnabled(true);
 		connection = factory.newConnection();
 		// Create a channel
 		channel = connection.createChannel();
