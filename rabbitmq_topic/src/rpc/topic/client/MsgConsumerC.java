@@ -1,4 +1,4 @@
-package rpc.topic;
+package rpc.topic.client;
 
 import java.io.IOException;
 

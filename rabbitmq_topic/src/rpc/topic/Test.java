@@ -2,21 +2,25 @@ package rpc.topic;
 
 import java.io.IOException;
 
+import rpc.topic.client.MsgConsumerA;
+import rpc.topic.client.MsgConsumerB;
+import rpc.topic.client.MsgConsumerC;
+import rpc.topic.client.MsgConsumerD_sub;
+import rpc.topic.client.MsgProducer;
+import rpc.topic.client.randqueue.MsgConsumerE;
 import rpc.topic.message.JsonToJava;
+import rpc.topic.server.Srv;
 
 import com.rabbitmq.client.Channel;
 
 public class Test {
+	
+	public void doSrvWorks() {	
+		callSendMsg();
+	}
 
 	public void doWorks() {
-		Thread send = new Thread(new Runnable() {
 
-			@Override
-			public void run() {
-				callSendMsg();
-			}
-
-		});
 		Thread t1 = new Thread(new Runnable() {
 			
 			@Override
@@ -24,7 +28,6 @@ public class Test {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				callReceiveMsg_A();
@@ -35,12 +38,12 @@ public class Test {
 
 			@Override
 			public void run() {
-				try {
+			/*	try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 				callReceiveMsg_D();
 			}
 
@@ -74,24 +77,33 @@ public class Test {
 			}
 
 		});
-		send.start();
-/*		try {
-			send.join();
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
-		t1.start();
-		t4.start();
-		t2.start();
-		t3.start();
+		Thread t5 = new Thread(new Runnable() {
 
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				callReceiveMsg_E();
+			}
+
+		});
+		
+
+		//t1.start();
+		//t2.start();
+		//t3.start();
+		t4.start();
+		t5.start();
 		try {
-			send.join();
-			t1.join();
-			t2.join();
-			t3.join();
+			//t1.join();
+			//t2.join();
+			//t3.join();
 			t4.join();
+			t5.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -100,6 +112,13 @@ public class Test {
 
 	public static void main(String[] argv) {
 		Test test = new Test();
+		test.doSrvWorks();
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		test.doWorks();
 	}
 
@@ -185,15 +204,30 @@ public class Test {
 		MsgConsumerD_sub msgConsumer_D = null;
 
 		try {
-			Thread.sleep(1);
 			msgConsumer_D = new MsgConsumerD_sub();
 			msgConsumer_D.init().receiveMsg_D();
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (msgConsumer_D != null) {
 				msgConsumer_D.closeConnection();
+			}
+		}
+	}
+	public void callReceiveMsg_E() {
+
+		MsgConsumerE msgConsumer_E = null;
+
+		try {
+			msgConsumer_E = new MsgConsumerE();
+			msgConsumer_E.init().receiveMsg_E();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (msgConsumer_E != null) {
+				msgConsumer_E.closeConnection();
 			}
 		}
 	}

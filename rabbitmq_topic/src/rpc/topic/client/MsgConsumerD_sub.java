@@ -1,8 +1,7 @@
-package rpc.topic;
+package rpc.topic.client;
 
 import java.io.IOException;
 
-import com.rabbitmq.client.AMQP.Basic;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -10,43 +9,48 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
-public class MsgConsumerA {
+public class MsgConsumerD_sub {
 	private static final String EXCHANGE_NAME = "topic_srv";
 	private static final String EXCHANGE_TYPE_TOPIC = "topic";
 	private static final String QUEUE_NAME_1 = "topic_srv_q1";
-	
+	private static final String QUEUE_NAME_3 = "topic_srv_q3";
 
 	private Connection connection;
 	private Channel channel;
-	private QueueingConsumer consumer_A;
+	private QueueingConsumer consumer_D;
 	private ConnectionFactory factory;
 
-	public MsgConsumerA init() throws IOException {
+	public MsgConsumerD_sub init() throws IOException {
 		// Create a connection
 		factory = new ConnectionFactory();
 		factory.setUsername("quan");
 		factory.setPassword("quan");
 		factory.setVirtualHost("rpctest");
-		factory.setHost("localhost");
+		factory.setHost("192.168.1.31");
+		factory.setPort(5672);
 		connection = factory.newConnection();
 		// Create a channel
 		channel = connection.createChannel();
-		
+
 		channel.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE_TOPIC);
-		//String queueName = channel.queueDeclare().getQueue();
+		// String queueName = channel.queueDeclare().getQueue();
 		channel.basicQos(1);
 		// Start a Consumer
-		consumer_A = new QueueingConsumer(channel);
-		// basicConsume(java.lang.String queue, boolean autoAck, java.lang.String consumerTag, Consumer callback)
+		consumer_D = new QueueingConsumer(channel);
+		// basicConsume(java.lang.String queue, boolean autoAck,
+		// java.lang.String consumerTag, Consumer callback)
 		// Start two non-nolocal, non-exclusive consumers.
-		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag1", consumer_A);
-		return this;
+		channel.basicConsume(QUEUE_NAME_1, false, "comsumer_tag4", consumer_D);
+		channel.basicConsume(QUEUE_NAME_3, false, "customer_tag_4only", consumer_D);
+		return this;	
+		
 	}
+	
 	public void closeConnection() {
 		try {
 		    connection = factory.newConnection();
 		    channel = connection.createChannel();
-		    channel.basicConsume(QUEUE_NAME_1, true, "comsumer_tag1", consumer_A);
+		    channel.basicConsume(QUEUE_NAME_3, false, "customer_tag_4D", consumer_D);
 		  } catch (IOException e) {
 			  e.printStackTrace();
 		  } finally {
@@ -67,42 +71,34 @@ public class MsgConsumerA {
 				}
 		    }
 		  } 
+		
 	}
 
-	public void receiveMsg_A() {
-		boolean flag = false;
-		
+	public void receiveMsg_D() {
 		while (true) {
 			QueueingConsumer.Delivery delivery;
 			try {
-				delivery = consumer_A.nextDelivery();
+
+				delivery = consumer_D.nextDelivery();
 				String message = new String(delivery.getBody());
-		        String routingKey = delivery.getEnvelope().getRoutingKey();
-		        
-		        Thread.sleep(1000); //1s
-		        
-		        if (flag) {
-		        	//channel.basicNack(, false, true);
-		        } else {
-		        	
-		        }
-	
-		        System.out.println(" [x] Received_A '" + routingKey + "':'" + message + "'"); 
-		        try {
+				String routingKey = delivery.getEnvelope().getRoutingKey();
+
+				System.out.println(" [x] Received_D '" + routingKey + "':'"
+						+ message + "'");
+
+				try {
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+		
 					e.printStackTrace();
 				}
-		        
+
 			} catch (ShutdownSignalException | ConsumerCancelledException
-					| InterruptedException e1) {
-				// TODO Auto-generated catch block
+					| InterruptedException e1){
+			
 				e1.printStackTrace();
 			}
-			 
-			
-	         
+
 		}
 
 	}

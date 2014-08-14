@@ -1,4 +1,4 @@
-package rpc.topic;
+package rpc.topic.client;
 
 import java.io.IOException;
 
@@ -25,29 +25,20 @@ public class MsgProducer {
 	
 	public void sendMsg(Channel channel) throws IOException {
 		int size = msgDir.getMsgDirectory().size();
-		//message from json
+		//message from JSON
 		if (size > 0) {
 			for (Message msg: msgDir.getMsgDirectory()) {
-				channel.basicPublish(EXCHANGE_NAME, msg.getRoutingKey(), null, msg.getContent().getBytes());
+				//channel.basicPublish(EXCHANGE_NAME, msg.getRoutingKey(), null, msg.getContent().getBytes());
 			}
 		}
 
-		for (int i = 0; i < 100; i++) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			message = "Message for BCs_" + i;
-			channel.basicPublish(EXCHANGE_NAME, routingKey_BC, null, message.getBytes());
-		    //System.out.println(" [x] Sent '" + routingKey_BC + "':'" + message + "'");
-		}
+		//Send messages to D only
 		for (int i = 0; i < 3; i++) {
 			message = "Message for D only_" + i;
 			channel.basicPublish(EXCHANGE_NAME, routingKey_D, null, message.getBytes());
 		    System.out.println(" [x] Sent '" + routingKey_D + "':'" + message + "'");
 		}
+		//Send messages to A and D
 		for (int i = 0; i < 100; i++) {
 			try {
 				Thread.sleep(100);
@@ -60,6 +51,18 @@ public class MsgProducer {
 			channel.basicPublish(EXCHANGE_NAME, routingKey_AD, null, message.getBytes());
 		    //System.out.println(" [x] Sent '" + routingKey_AD + "':'" + message + "'");
 			
+		}
+		//Send messages to B and C
+		for (int i = 0; i < 100; i++) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//message = "Message for BCs_" + i;
+			//channel.basicPublish(EXCHANGE_NAME, routingKey_BC, null, message.getBytes());
+		    //System.out.println(" [x] Sent '" + routingKey_BC + "':'" + message + "'");
 		}
 		
 		
